@@ -9,12 +9,15 @@ app.use(express.json())
 const PORT = process.env.PORT || 5000
 
 app.ws('/', (ws, req) => {
+    ws.isAlive = true
     ws.on('message', (message) => {
         const msgObject = JSON.parse(message)
-        console.log(msgObject)
         switch (msgObject.method) {
             case 'connection':
                 connectionHandler(ws, msgObject)
+                break
+            case 'pong':
+                heartbeat(ws)
                 break
             default:
                 broadCastConnection(ws, msgObject)
@@ -38,3 +41,22 @@ const broadCastConnection = (ws, msg) => {
         }
     })
 }
+
+const heartbeat = (ws) => {
+    ws.isAlive = true
+}
+
+const ping = (ws) => {
+    ws.send(JSON.stringify('ping'))
+}
+
+setInterval(() => {
+    aWss.clients.forEach((ws) => {
+        if (ws.isAlive === false) {
+            return ws.terminate()
+        }
+
+        ws.isAlive = false
+        ws.ping(() => { ping(ws) })
+    })
+}, 5000)
