@@ -2,12 +2,9 @@ require("dotenv").config()
 const express = require('express')
 const app = express()
 const websocket = require('express-ws')(app)
-const cors = require('cors')
-const corsOptions = require("./config/corsOptions");
 const aWss = websocket.getWss()
 
 app.use(express.json())
-app.use(cors(corsOptions))
 
 
 const PORT = process.env.PORT || 5000
