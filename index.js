@@ -11,14 +11,12 @@ const PORT = process.env.PORT || 5000
 app.ws('/', (ws, req) => {
     ws.on('message', (message) => {
         const msgObject = JSON.parse(message)
+        console.log(msgObject)
         switch (msgObject.method) {
             case 'connection':
                 connectionHandler(ws, msgObject)
                 break
-            case 'draw':
-                broadCastConnection(ws, msgObject)
-                break
-            case 'text':
+            default:
                 broadCastConnection(ws, msgObject)
                 break
         }
